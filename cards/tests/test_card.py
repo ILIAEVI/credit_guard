@@ -1,7 +1,6 @@
 import random
 import time
 from django.contrib.auth.models import User
-from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework.reverse import reverse_lazy
@@ -36,7 +35,25 @@ class TestCard(APITestCase):
 
         end_time = time.time()
         duration = end_time - start_time
-        self.assertLess(duration, 10, f"Validation time is too long: {duration}")
+        self.assertLess(duration, 1, f"Validation time is too long: {duration}")
+
+    def test_time(self):
+        url = reverse_lazy('card-bulk-create')
+        start_time = time.time()
+        cards_data = []
+
+        for _ in range(100):
+            card_number = generate_card_number()
+            ccv = generate_ccv()
+            title = f"Card {_}"
+            data = {'title': title, 'card_number': card_number, 'ccv': ccv}
+            cards_data.append(data)
+
+        response = self.client.post(url, data=cards_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        end_time = time.time()
+        duration = end_time - start_time
+        self.assertLess(duration, 1, f"Validation time is too long: {duration}")
 
     def test_valid_card(self):
         url = reverse_lazy('card-create')
@@ -84,4 +101,3 @@ class TestCard(APITestCase):
         data = {'title': title, 'card_number': card_number, 'ccv': ccv}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
