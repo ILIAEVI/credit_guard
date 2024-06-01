@@ -22,7 +22,7 @@ class TestCard(APITestCase):
         self.client.force_authenticate(self.user)
 
     def test_validation_time(self):
-        url = reverse_lazy('cards-add-card')
+        url = reverse_lazy('card-create')
 
         start_time = time.time()
         for _ in range(100):
@@ -39,7 +39,7 @@ class TestCard(APITestCase):
         self.assertLess(duration, 10, f"Validation time is too long: {duration}")
 
     def test_valid_card(self):
-        url = reverse_lazy('cards-add-card')
+        url = reverse_lazy('card-create')
 
         card_number = '1234123412341234'
         ccv = 200
@@ -53,10 +53,10 @@ class TestCard(APITestCase):
         self.assertTrue(card.is_valid)
 
     def test_invalid_card(self):
-        url = reverse_lazy('cards-add-card')
+        url = reverse_lazy('card-create')
         card_number = '1145123412341234'
         title = f"Card"
-        ccv = generate_ccv()
+        ccv = 125
 
         data = {'title': title, 'card_number': card_number, 'ccv': ccv}
 
@@ -66,7 +66,7 @@ class TestCard(APITestCase):
         self.assertFalse(card.is_valid)
 
     def test_invalid_card_length(self):
-        url = reverse_lazy('cards-add-card')
+        url = reverse_lazy('card-create')
         card_number = '123245666'
         title = f"Card"
         ccv = generate_ccv()
@@ -77,11 +77,11 @@ class TestCard(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_not_numeric_card(self):
-        url = reverse_lazy('cards-add-card')
+        url = reverse_lazy('card-create')
         card_number = '123f123412341234'
         ccv = generate_ccv()
         title = f"Card"
-        data = {'title': title, 'card_number':card_number, 'ccv': ccv}
+        data = {'title': title, 'card_number': card_number, 'ccv': ccv}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 

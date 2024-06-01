@@ -1,11 +1,7 @@
-from rest_framework.routers import DefaultRouter
-from django.urls import path, include
-from cards import views
-
-
-router = DefaultRouter()
-router.register(r'cards', views.CardViewSet, basename='cards')
+from django.urls import path
+from cards.views import CardListView, CardCreateView
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('cards/', CardListView.as_view(), name='card-list'),
+    path('cards/create/', CardCreateView.as_view(), name='card-create')
 ]

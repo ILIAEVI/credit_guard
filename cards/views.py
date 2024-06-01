@@ -1,12 +1,10 @@
-from rest_framework import viewsets, status, filters, permissions
+from rest_framework import generics, status, filters, permissions
 from rest_framework.response import Response
-
 from cards.models import Card
 from cards.serializers import CardSerializer, AddCardSerializer
-from rest_framework.decorators import action
 
 
-class CardViewSet(viewsets.ModelViewSet):
+class CardListView(generics.ListAPIView):
     queryset = Card.objects.all().order_by('-id')
     serializer_class = CardSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -22,15 +20,14 @@ class CardViewSet(viewsets.ModelViewSet):
         else:
             return Card.objects.none()
 
-    @action(
-        methods=['post'],
-        detail=False,
-        url_path='add-card',
-        serializer_class=AddCardSerializer,
-        permission_classes=[]
-    )
-    def add_card(self, request):
+
+class CardCreateView(generics.CreateAPIView):
+    queryset = Card.objects.none()
+    serializer_class = AddCardSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
