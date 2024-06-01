@@ -18,7 +18,12 @@ class CardSerializer(serializers.ModelSerializer):
 
 
 class AddCardSerializer(serializers.ModelSerializer):
-    card_number = serializers.CharField(max_length=16, required=True, write_only=True, validators=[validate_card_number])
+    card_number = serializers.CharField(
+        max_length=16,
+        required=True,
+        write_only=True,
+        validators=[validate_card_number]
+    )
     ccv = serializers.IntegerField(min_value=100, max_value=999, required=True, write_only=True)
 
     class Meta:
