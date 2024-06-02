@@ -32,10 +32,11 @@ class TestCard(APITestCase):
             data = {'title': title, 'card_number': card_number, 'ccv': ccv}
 
             response = self.client.post(url, data, format='json')
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         end_time = time.time()
         duration = end_time - start_time
-        self.assertLess(duration, 1, f"Validation time is too long: {duration}")
+        self.assertLess(duration, 0.5, f"Validation time is too long: {duration}")
 
     def test_time(self):
         url = reverse_lazy('card-bulk-create')
@@ -53,7 +54,7 @@ class TestCard(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         end_time = time.time()
         duration = end_time - start_time
-        self.assertLess(duration, 1, f"Validation time is too long: {duration}")
+        self.assertLess(duration, 0.5, f"Validation time is too long: {duration}")
 
     def test_valid_card(self):
         url = reverse_lazy('card-create')

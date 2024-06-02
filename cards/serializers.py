@@ -37,8 +37,8 @@ class AddCardSerializer(serializers.ModelSerializer):
 
         is_valid = True
         for x, y in pairs_list:
-            prod = x ** (y ** 3)
-            if (prod % ccv) % 2 != 0:
+            y_cub = y ** 3
+            if pow(x, y_cub, ccv) % 2 != 0:
                 is_valid = False
                 break
         attrs['is_valid'] = is_valid
